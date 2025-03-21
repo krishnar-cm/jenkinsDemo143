@@ -13,8 +13,10 @@ pipeline {
                         if (Jenkins.instance.getItem(jobName) == null) {
                             println "Creating pipeline job: ${jobName}"
                             def pipelineJob = Jenkins.instance.createProject(org.jenkinsci.plugins.workflow.job.WorkflowJob, jobName)
+                            def gitRemoteOriginUrl = scm.getUserRemoteConfigs()[0].getUrl()
+                            def branchName = scm.branches[0].name
                             pipelineJob.definition = new org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition(
-                                new hudson.plugins.git.GitSCM(repoUrl),
+                                new hudson.plugins.git.GitSCM(gitRemoteOriginUrl),
                                 jenkinsFile
                             )
                             pipelineJob.save()

@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Discover Jenkinsfiles') {
 steps {
-def jenkinsFiles = sh(script: 'git ls-files -- ':!:Jenkinsfile' | grep Jenkinsfile', returnStdout: true).trim().split('\n')
+def jenkinsFiles = sh(script: 'git ls-files --exclude-standard -- ":!:Jenkinsfile" | grep Jenkinsfile', returnStdout: true).trim().split('\n')
      echo "All Jenkinsfile: ${jenkinsFiles}"
     jenkinsFiles.each { jenkinsFile ->
     def jobName = jenkinsFile.replace('/', '_').replace('Jenkinsfile', '').trim()

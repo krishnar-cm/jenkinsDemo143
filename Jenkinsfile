@@ -1,13 +1,16 @@
 pipeline {
     agent any
     stages {
-        stage('Discover and Execute Pipelines') {
+        stage('Discover Jenkinsfiles') {
             steps {
                 script {
-                    def files = sh(script: 'git ls-files | grep Jenkinsfile', returnStdout: true).trim().split('\n')
-                    for (file in files) {
-                        echo "Executing pipeline: ${file}"
-                        load file
+                    // List all Jenkinsfiles in the repository
+                    def jenkinsFiles = sh(script: 'git ls-files | grep Jenkinsfile', returnStdout: true).trim().split('\n')
+                    
+                    // Create a job for each Jenkinsfile found
+                    jenkinsFiles.each { jfile ->
+                        echo "Found Jenkinsfile: ${jfile}"
+                        build job: "${env.JOB_NAME}/${jfile}", wait: false // Trigger separate jobs for each Jenkinsfile
                     }
                 }
             }

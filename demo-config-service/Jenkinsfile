@@ -6,6 +6,10 @@ pipeline {
         MAVEN_HOME = tool 'mvn-3.9.5' // Ensure Maven is configured in Jenkins Global Tool Configuration
     }
 
+    tools {
+        jdk 'jdk8u442_b06'
+    }
+
     stages {
         stage('Checkout Code') {
             steps {

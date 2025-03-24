@@ -10,7 +10,10 @@ pipeline {
                     // Create a job for each Jenkinsfile found
                     jenkinsFiles.each { jenkinsFile ->
                         def jobName = jenkinsFile.replace('/', '_').replace('Jenkinsfile', '').trim()
-                        if (Jenkins.instance.getItem(jobName) == null) {
+                        def jenkinsUrl = 'http://localhost:8080'
+                        def response = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${jenkinsUrl}/job/${jobName}/api/json", returnStdout: true).trim()
+                        println "Jenkins URL ${jenkinsUrl}"
+                        if (response != '200') {
                             println "Creating pipeline job: ${jobName}"
                             def gitRemoteOriginUrl = scm.getUserRemoteConfigs()[0].getUrl()
                             def branchName = scm.branches[0].name

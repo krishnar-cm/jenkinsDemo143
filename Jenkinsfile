@@ -12,14 +12,22 @@ pipeline {
                         def jobName = jenkinsFile.replace('/', '_').replace('Jenkinsfile', '').trim()
                         if (Jenkins.instance.getItem(jobName) == null) {
                             println "Creating pipeline job: ${jobName}"
-                            def pipelineJob = Jenkins.instance.createProject(org.jenkinsci.plugins.workflow.job.WorkflowJob, jobName)
                             def gitRemoteOriginUrl = scm.getUserRemoteConfigs()[0].getUrl()
                             def branchName = scm.branches[0].name
-                            pipelineJob.definition = new org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition(
-                                new hudson.plugins.git.GitSCM(gitRemoteOriginUrl),
-                                jenkinsFile
-                            )
-                            pipelineJob.save()
+                             pipelineJob(jobName) {
+                                definition {
+                                    cpsScm {
+                                        lightweight(true) // Use lightweight checkout
+                                        scm {
+                                            git {
+                                                remote(gitRemoteOriginUrl)
+                                                branch(branchName)
+                                            }
+                                        }
+                                        scriptPath(jenkinsFile) // Specify the path to the Jenkinsfile
+                                    }
+                                }
+                            }
                         } else {
                             println "Pipeline job ${jobName} already exists."
                         }
@@ -29,6 +37,39 @@ pipeline {
         }
     }
 }
+
+
+// pipeline {
+//     agent any
+//     stages {
+//         stage('Discover Jenkinsfiles') {
+//             steps {
+//                 script {
+//                     // List all Jenkinsfiles in the repository
+//                     def jenkinsFiles = sh(script: 'git ls-files --exclude-standard -- ":!:Jenkinsfile" | grep Jenkinsfile', returnStdout: true).trim().split('\n')
+//                     echo "All Jenkinsfile: ${jenkinsFiles}"
+//                     // Create a job for each Jenkinsfile found
+//                     jenkinsFiles.each { jenkinsFile ->
+//                         def jobName = jenkinsFile.replace('/', '_').replace('Jenkinsfile', '').trim()
+//                         if (Jenkins.instance.getItem(jobName) == null) {
+//                             println "Creating pipeline job: ${jobName}"
+//                             def pipelineJob = Jenkins.instance.createProject(org.jenkinsci.plugins.workflow.job.WorkflowJob, jobName)
+//                             def gitRemoteOriginUrl = scm.getUserRemoteConfigs()[0].getUrl()
+//                             def branchName = scm.branches[0].name
+//                             pipelineJob.definition = new org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition(
+//                                 new hudson.plugins.git.GitSCM(gitRemoteOriginUrl),
+//                                 jenkinsFile
+//                             )
+//                             pipelineJob.save()
+//                         } else {
+//                             println "Pipeline job ${jobName} already exists."
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 
 
 

@@ -22,11 +22,21 @@ pipeline {
             }
         }
 
+        stage('Check Java Version') {
+            steps {
+                script {
+                    // Print the Java version to verify
+                    sh 'java -version'
+                }
+            }
+        }
+
         stage('Build with Maven') {
             steps {
                 script {
                   dir('config-service') {
                     // Run Maven build
+                    sh "'${MAVEN_HOME}/bin/mvn' -v" // Adjust the command as necessary for your build
                     sh "'${MAVEN_HOME}/bin/mvn' clean install" // Adjust the command as necessary for your build
                   }
                 }

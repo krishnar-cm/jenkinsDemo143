@@ -11,7 +11,7 @@ pipeline {
                     jenkinsFiles.each { jenkinsFile ->
                         def jobName = jenkinsFile.replace('/', '_').replace('Jenkinsfile', '').trim()
                         def jenkinsUrl = 'http://localhost:8080'
-                        def response = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${jenkinsUrl}/job/${jobName}/api/json", returnStdout: true).trim()
+                        def response = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${jenkinsUrl}/job/testFolder1/${jobName}/api/json", returnStdout: true).trim()
                         println "Jenkins URL ${jenkinsUrl}"
                         if (response != '200') {
                             println "Creating pipeline job: ${jobName}"
